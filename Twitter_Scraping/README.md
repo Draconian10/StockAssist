@@ -98,8 +98,105 @@ https://github.com/Draconian10/StockAssist/tree/main/Twitter_Scraping/Stock_Assi
 ### Which is the highest paying dividend company?
 
 #### SQL: 
-    SELECT cm.cm_short_name, MAX(td.td_dividend_rate) FROM ticker_details td, company_master cm WHERE td.td_ticker = cm.cm_symbol GROUP BY cm.cm_short_name ORDER BY MAX(td.td_dividend_rate) DESC LIMIT 1;
+    SELECT cm.cm_short_name, td.td_dividend_rate from Ticker_Details td INNER JOIN Company_Master cm ON td.td_ticker = cm.cm_symbol ORDER BY td.td_dividend_rate DESC LIMIT 1;
     
 #### Relational Algebra Expression: 
+    τ td.td_dividend_rate ↓ 
+        π cm.cm_short_name, td.td_dividend_rate 
+            (ρ td ticker_details ⋈ td.td_ticker = cm.cm_symbol 
+                ρ cm company_master)
 
+### What is the 52 week High of Apple?
 
+#### SQL: 
+    SELECT cm.cm_short_name, td.td_52_week_high from Ticker_Details td INNER JOIN Company_Master cm ON td.td_ticker = cm.cm_symbol WHERE cm_symbol ='AAPL';
+
+#### Relational Algebra Expression: 
+    π cm.cm_short_name, td.td_52_week_high
+        σ cm_symbol = "AAPL"
+            (ρ td ticker_details ⋈ td.td_ticker = cm.cm_symbol
+                ρ cm company_master)
+                
+### Which sector does Apple Inc. comes under?
+                
+#### SQL: 
+    SELECT cm.cm_short_name, t.tck_sector from Ticker_Master t INNER JOIN Company_Master cm ON t.tck_symbol = cm.cm_symbol WHERE cm.cm_symbol = 'AAPL';
+    
+#### Relational Algebra Expression: 
+    π cm.cm_short_name, t.tck_sector
+        σ cm.cm_symbol = "AAPL"
+            (ρ t ticker_master ⋈ t.tck_symbol = cm.cm_symbol
+                ρ cm company_master)
+
+### What is the PEG ratio of Tesla?
+
+#### SQL: 
+    SELECT td_ticker, td_peg_ratio FROM ticker_details WHERE td_ticker = 'TSLA';
+
+#### Relational Algebra Expression: 
+    π td_ticker, td_peg_ratio
+        σ td_ticker = "TSLA" ticker_details
+
+### What is the highest daily close for Microsoft?
+
+#### SQL: 
+    SELECT cm_symbol, dp_close FROM Daily_Prices dp INNER JOIN Company_Master cm ON dp.dp_ticker = cm.cm_symbol WHERE cm.cm_symbol = 'MSFT' ORDER BY dp_close DESC LIMIT 1;
+
+#### Relational Algebra Expression: 
+    τ dp_close 
+        π cm_symbol, dp_close 
+            σ cm.cm_symbol = "MSFT" 
+                (ρ dp daily_prices ⋈ dp.dp_ticker = cm.cm_symbol 
+                    ρ cm company_master)
+
+### What is the stock volume traded at 11:00 to 12:00 for Apple Inc.?
+
+#### SQL:
+    SELECT hp_ticker, hp_volume FROM Hourly_Prices WHERE hp_date BETWEEN '2022-11-10 11:00' AND '2022-11-10 12:00' AND hp_ticker = 'AAPL';
+
+#### Relational Algebra Expression: 
+    π hp_ticker, hp_volume
+        σ "2022-11-10 11:00" <= hp_date AND hp_date <= "2022-11-10 12:00" AND hp_ticker = "AAPL" hourly_prices
+
+### How many stocks are listed in Health Care Sector?
+
+#### SQL:
+    SELECT COUNT(*) as TOTAL FROM TICKER_MASTER WHERE tck_sector = 'Health Care';
+    
+#### Relational Algebra Expression: 
+    π COUNT (*) → total
+        γ COUNT (*)
+            σ tck_sector = "Health Care" ticker_master
+            
+### Which year has highest closing price for Microsoft?
+    
+#### SQL:
+    SELECT YEAR(dp_date) FROM Daily_Prices WHERE dp_ticker = 'MSFT' ORDER BY dp_close DESC LIMIT 1;
+    
+#### Relational Algebra Expression: 
+    τ dp_close ↓
+        π year
+            σ dp_ticker = "MSFT" daily_prices
+
+### What is the net annual REVENUE of Tesla company?
+
+#### SQL:
+    SELECT cm_short_name, td.td_total_revenue FROM Ticker_Details td INNER JOIN Company_Master cm ON td.td_ticker = cm.cm_symbol WHERE cm_symbol='TSLA';
+
+#### Relational Algebra Expression: 
+    π cm_short_name, td.td_total_revenue
+        σ cm_symbol = "TSLA"
+            (ρ td ticker_details ⋈ td.td_ticker = cm.cm_symbol
+                ρ cm company_master)
+
+### What are the companies having the net income above 100 billion dollars?
+
+#### SQL:
+    SELECT cm.cm_short_name, td_total_revenue FROM Ticker_details td INNER JOIN Company_Master cm ON td.td_ticker = cm.cm_symbol WHERE td.td_total_revenue >= 100000000000 ORDER BY td_total_revenue;
+
+#### Relational Algebra Expression: 
+    τ td_total_revenue
+        π cm . cm_short_name, td_total_revenue
+            σ td . td_total_revenue >= 100000000000
+                (ρ td ticker_details ⋈ td.td_ticker = cm.cm_symbol
+                    ρ cm company_master)
