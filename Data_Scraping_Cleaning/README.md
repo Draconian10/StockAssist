@@ -15,14 +15,21 @@ We gathered valid sources from data regarding stock markets. This data has been 
 - Web Scraping
 - Data Scraping using Yahoo Finance API
 
+You can find their respective DDL and DML scripts at the following link:
+https://github.com/Draconian10/StockAssist/tree/main/Data_Scraping_Cleaning/SQL_Scripts
+
 ### Data Scraping from CSV file
 Data is extracted from a CSV file which was generated from the following link:
+
 https://en.wikipedia.org/wiki/List_of_S%26P_500_companies
+
 Data munging is further performed and cleaned in order to be inserted into the MySQL database. This data is inserted into the ticker_master table using the Python connector.
 
 ### Web Scraping
 Web Scraping is performed using a Python library called Beautiful Soup for extracting data from HTML and XML files. It connects to the webpage using the HTML parser and converts the parse tree into a formatted Unicode string. We have scraped companies data from the following link:
+
 https://www.marketbeat.com/types-of-stock/sp-500-stocks/
+
 This data is later inserted in the MySQL database after data munging and cleaning into the company_details table.
 
 ### Data Scraping using Yahoo Finance API
@@ -31,6 +38,8 @@ Yahoo Finance API is a Python library used to retrieve and collect the company's
     Daily prices are generated in the OHLC format for the ticker requested. This data is produced with the interval of 1 day.
 - Hourly_Prices
     Hourly prices are generated in the OHLC format for the ticker requested. This data is produced with the interval of 1 hour.
+
+Refer: https://github.com/Draconian10/StockAssist/blob/main/Data_Scraping_Cleaning/Data_Processing.ipynb
 
 ## Conceptual Model
 ![WhatsApp Image 2022-12-05 at 8 56 12 AM](https://user-images.githubusercontent.com/23314479/205778284-02d61f6b-ab4e-417c-bfce-2e013eafcd99.jpeg)
