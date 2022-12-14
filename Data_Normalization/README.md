@@ -72,7 +72,7 @@ Normalization has been performed upon the following tables in the Stock Assist D
 - All requirements of 2NF are being met
 - However, ticker master contains transitive dependency on the columns - tck_sector and tck_sub_industry
 
-##### Removing Transitive Dependency
+#### Removing Transitive Dependency
 Transitive dependency is eliminated from the Ticker Master table by creating a new table called Ticker Industry. Ticker Industry consists of ti_sector and ti_sub_industry where ti_sub_industry is the primary key.
 
 ![image](https://user-images.githubusercontent.com/23314479/207473061-da6c8d4f-6c8e-4d65-97f5-fa731a568955.png)
@@ -81,6 +81,102 @@ Finally, the column tck_sector is removed from the Ticker Master table in order 
 
 ![image](https://user-images.githubusercontent.com/23314479/207473415-9a75b4d6-3843-441a-9bea-a156abf4b512.png)
 
+### Ticker Details
+![image](https://user-images.githubusercontent.com/23314479/207473758-28fc79f7-b56e-49db-908e-d3ea269f0cec.png)
 
+#### First Normal Form: Ticker Details satisfies 1NF Requirements
+- Ticker Details table can be indentified by the primary key (td_ticker)
+- No multi-valued attributes are present
+- No repeating groups
 
+#### Second Normal Form: Ticker Details satisfies 2NF Requirements
+- All requirements of 1NF are being met
+- No calculated data present
+- No partial dependency of any columns on the primary key
 
+#### Third Normal Form: Ticker Details satisfies 3NF Requirements
+- All requirements of 2NF are being met
+- No transitive dependency present
+
+### Company Master
+![image](https://user-images.githubusercontent.com/23314479/207474600-6f0b9b08-6401-4bdf-8948-002532210d99.png)
+
+#### First Normal Form: Company Master satisfies 1NF Requirements
+- Ticker Details table can be indentified by the primary key (cm_symbol, cm_short_name)
+- No multi-valued attributes are present
+- No repeating groups
+
+#### Second Normal Form: Company Master satisfies 2NF Requirements
+- All requirements of 1NF are being met
+- No calculated data present
+- No partial dependency of any columns on the primary key
+
+#### Third Normal Form: Company Master does not satisfy 3NF Requirements
+- All requirements of 2NF are being met
+- However, company master contains transitive dependency on the columns - cm_city and cm_state
+
+#### Removing Transitive Dependency
+Transitive dependency is eliminated from the Company Master table by creating a new table called Company Location. Company Location consists of cl_city and cl_state where cl_city is the primary key.
+
+![image](https://user-images.githubusercontent.com/23314479/207475033-8d4539e4-09cc-41c8-af2f-5005555041af.png)
+
+Finally, the column cm_state is removed from the Company Master table in order to remove transitive dependency. The resulting Company Master table is as follows:
+
+![image](https://user-images.githubusercontent.com/23314479/207475265-96aeb61e-ae73-45b4-a9f1-8b1d60a1e875.png)
+
+### Company Details
+![image](https://user-images.githubusercontent.com/23314479/207475589-57241f22-bde9-4c21-a3d1-16d2f39bb861.png)
+
+#### First Normal Form: Company Details satisfies 1NF Requirements
+- Company Details table can be indentified by the primary key (cmd_symbol)
+- No multi-valued attributes are present
+- No repeating groups
+
+#### Second Normal Form: Company Details satisfies 2NF Requirements
+- All requirements of 1NF are being met
+- No calculated data present
+- No partial dependency of any columns on the primary key
+
+#### Third Normal Form: Company Details satisfies 3NF Requirements
+- All requirements of 2NF are being met
+- No transitive dependency present
+
+### Daily Prices
+![image](https://user-images.githubusercontent.com/23314479/207476141-91629f6a-9b41-4a85-ac32-924e033f75a2.png)
+
+#### First Normal Form: Daily Prices satisfies 1NF Requirements
+- Daily Prices table can be indentified by the primary key (dp_id)
+- No multi-valued attributes are present
+- No repeating groups
+
+#### Second Normal Form: Daily Prices satisfies 2NF Requirements
+- All requirements of 1NF are being met
+- No calculated data present
+- No partial dependency of any columns on the primary key
+
+#### Third Normal Form: Daily Prices does not satisfy 3NF Requirements
+- All requirements of 2NF are being met
+- However, daily prices contains transitive dependency on the columns - dp_date and dp_ticker since the combination of dp_date and dp_ticker can uniquely identify the whole row.
+
+#### Removing Transitive Dependency
+Transitive dependency is eliminated from the Daily Prices table by creating a composite key of dp_id, dp_date and dp_ticker.
+
+### Hourly Prices
+![image](https://user-images.githubusercontent.com/23314479/207478605-617da5ca-1f01-4a90-8cf7-98cdd5b70fd0.png)
+
+#### First Normal Form: Hourly Prices satisfies 1NF Requirements
+- Hourly Prices table can be indentified by the primary key (hp_id)
+- No multi-valued attributes are present
+- No repeating groups
+
+#### Second Normal Form: Hourly Prices satisfies 2NF Requirements
+- All requirements of 1NF are being met
+- No calculated data present
+- No partial dependency of any columns on the primary key
+
+#### Third Normal Form: Hourly Prices does not satisfy 3NF Requirements
+- All requirements of 2NF are being met
+- However, hourly prices contains transitive dependency on the columns - hp_date and hp_ticker since the combination of hp_date and hp_ticker can uniquely identify the whole row.
+
+#### Removing Transitive Dependency
+Transitive dependency is eliminated from the Hourly Prices table by creating a composite key of hp_id, hp_date and hp_ticker.
