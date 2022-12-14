@@ -81,7 +81,7 @@ Transitive dependency is eliminated from the Ticker Master table by creating a n
 
 ![image](https://user-images.githubusercontent.com/23314479/207473061-da6c8d4f-6c8e-4d65-97f5-fa731a568955.png)
 
-Finally, the column tck_sector is removed from the Ticker Master table in order to remove transitive dependency. The resulting Ticker Master table is as follows:
+Finally, the column tck_sector is removed from the Ticker Master table in order to remove transitive dependency. The tck_sub_industry is a foreign key which references to the ti_sub_industry column in the Ticker Industry table. The resulting Ticker Master table is as follows:
 
 ![image](https://user-images.githubusercontent.com/23314479/207473415-9a75b4d6-3843-441a-9bea-a156abf4b512.png)
 
@@ -120,7 +120,7 @@ Finally, the column tck_sector is removed from the Ticker Master table in order 
 - However, company master contains transitive dependency on the columns - cm_city and cm_state
 
 #### Removing Transitive Dependency
-Transitive dependency is eliminated from the Company Master table by creating a new table called Company Location. Company Location consists of cl_city and cl_state where cl_city is the primary key.
+Transitive dependency is eliminated from the Company Master table by creating a new table called Company Location. The cm_city is a foreign key which references to the cl_city column in the Company Location table. Company Location consists of cl_city and cl_state where cl_city is the primary key.
 
 ![image](https://user-images.githubusercontent.com/23314479/207475033-8d4539e4-09cc-41c8-af2f-5005555041af.png)
 
