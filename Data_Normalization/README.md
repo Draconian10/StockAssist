@@ -46,6 +46,10 @@ This level of normalization makes sure that the table contains no repeating grou
 2. Identify the dependent attributes using the determinants determined in Step 1
 3. Eliminate the Dependent Attributes from Transitive Dependencies
 
+## Conceptual Model
+![Stock_Market drawio(2)](https://user-images.githubusercontent.com/23314479/207480136-c54e884e-b33c-4d5a-885c-37ece58edbe3.png)
+
+
 ## Data Normalization in Stock Assist Database
 Normalization has been performed upon the following tables in the Stock Assist Database:
 - Ticker Master
@@ -180,3 +184,85 @@ Transitive dependency is eliminated from the Daily Prices table by creating a co
 
 #### Removing Transitive Dependency
 Transitive dependency is eliminated from the Hourly Prices table by creating a composite key of hp_id, hp_date and hp_ticker.
+
+## Create Views for Use Case Scenarios
+
+### What is the market cap of any particular stock?
+
+#### SQL:
+    create or replace view cmp_market_cap as select cm.cm_symbol cmc_symbol, cm.cm_short_name cmc_company_name, cd.cmd_market_cap cmc_market_cap from company_details cd, company_master cm where cd.cmd_symbol = cm.cm_symbol;
+    
+### Which companies have high operating cash flow?
+
+#### SQL:
+    create or replace view cmp_cash_flow as select td.tck_symbol ccf_symbol, cm.cm_short_name ccf_company_name, cm.cm_cash_flow ccf_cash_flow from company_master cm, ticker_master td where td.tck_symbol = cm.cm_symbol order by cm.cm_cash_flow desc;
+    
+### What was the change in price of the stock over time?
+
+#### SQL:
+    create or replace view amzn_stock_price_change as select dp_ticker aspc_ticker, ((select dp_close from daily_prices where dp_ticker = 'AMZN' and dp_date = (select max(dp_date) from daily_prices where dp_ticker = 'AMZN')) - (select dp_close from daily_prices where dp_ticker = 'AMZN' and dp_date = (select min(dp_date) from daily_prices where dp_ticker = 'AMZN'))) aspc_price_change from daily_prices where dp_ticker = 'AMZN' group by dp_ticker;
+
+### What was the daily return of the stock on average?
+
+#### SQL:
+    create or replace view tck_daily_returns as select dp_ticker tdr_ticker, dp_date tdr_date, (dp_close-dp_open) tdr_daily_return from daily_prices order by dp_ticker, dp_date;
+
+### What was the moving average of the various stocks?
+
+#### SQL:
+    create or replace view tck_moving_avg as select hp_ticker tma_ticker, hp_date tma_date, (sum(hp_close)/count(hp_close)) tma_mov_avg from hourly_prices;
+
+### Which are the highest dividend paying stocks?
+
+#### SQL:
+    create or replace view high_dividend_stocks as select tm.tck_symbol, tm.tck_security, td.td_dividend_rate from ticker_details td, ticker_master tm where td.td_ticker = tm.tck_symbol order by td.td_dividend_rate desc limit 5;
+    
+### How much value do we put at risk by investing in a particular stock?
+
+#### SQL:
+    create or replace view msft_risk_reward_ratio as select dp1.dp_ticker, (((dp2.dp_close - dp1.dp_close)*dp1.dp_volume)/(dp1.dp_close * dp1.dp_volume)) risk_reward from daily_prices dp1, daily_prices dp2 where dp1.dp_date = dp2.dp_date + 1 and dp1.dp_ticker = 'MSFT' and dp2.dp_ticker = 'MSFT' group by dp1.dp_ticker, dp2.dp_ticker;
+    
+### Which stocks achieved the 52 week high within the last week?
+
+#### SQL:
+    create or replace view last_52_week_high_stocks as select tck_symbol lwhs_ticker, tck_security lwhs_security_name, td_52_week_high lwhs_52_week_high from ticker_details, ticker_master where tck_symbol = td_ticker order by td_52_week_high desc limit 5;
+    
+### Which are the highest performing stocks in the Technology sector for the day?
+
+#### SQL:
+    create or replace view high_performance_tech_stocks as select tck_symbol hpts_symbol, tck_security hpts_security_name, ti_sector hpts_sector, dp_close hpts_close_price from ticker_master, daily_prices, ticker_industry where tck_symbol = dp_ticker and ti_sub_industry = tck_sub_industry and ti_sector = 'Information Technology' and dp_date = (select max(dp_date) from daily_prices) order by dp_close desc;
+
+### What is the annual net income of a given company?
+
+#### SQL:
+    create or replace view company_net_income as select td.td_ticker cni_ticker, cm.cm_short_name cni_company_name, td.td_total_revenue cni_net_income from ticker_details td, company_master cm where td.td_ticker = cm.cm_symbol order by cni_net_income desc;
+
+### what is the 52 week low of any particular stock?
+
+#### SQL:
+    create or replace view tck_52_week_low_stocks as SELECT cm.cm_short_name twls_company_name, td.td_52_week_low twls_52_week_low from Ticker_Details td, Company_Master cm where td.td_ticker = cm.cm_symbol order by td.td_52_week_low desc;
+
+### What is the net annual revenue of Netflix?
+
+#### SQL:
+    create or replace view nflx_net_revenue as SELECT cm_short_name nnr_short_name, td.td_total_revenue nnr_annual_revenue FROM Ticker_Details td, Company_Master cm where td.td_ticker = cm.cm_symbol and cm_symbol='NFLX';
+
+### List the companies based on their sector.
+
+#### SQL:
+    create or replace view company_sector as SELECT tck_security, t.ti_sector from Ticker_industry t, ticker_master tck where t.ti_sub_industry = tck_sub_industry order by ti_sector;
+    
+### What is the lowest daily close for Microsoft?
+
+#### SQL:
+    create or replace view msft_lowest_daily_close as select dp_ticker mldc_ticker, dp_close mldc_close from daily_prices where dp_ticker = 'MSFT' and dp_close = (select min(dp_close) from daily_prices where dp_ticker = 'MSFT');
+    
+## What are the companies having the net income above 200 billion dollars?
+
+#### SQL:
+    create or replace view cmp_inc_over_two_billion as SELECT cm.cm_short_name ciotb_company_name, td_total_revenue ciotb_income FROM Ticker_details td, Company_Master cm where td.td_ticker = cm.cm_symbol and td.td_total_revenue >= 200000000000 ORDER BY td_total_revenue;
+    
+### What is the profit of GOOGLE in last 1 year?
+
+#### SQL:
+    create or replace view googl_gross_profit as SELECT tck_symbol ggp_symbol, cm_short_name ggp_company_name, cm_gross_profit ggp_gross_profit from Company_master cm, ticker_master tck where cm.cm_symbol = tck.tck_symbol and tck.tck_symbol ='GOOGL';
