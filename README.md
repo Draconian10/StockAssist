@@ -39,6 +39,7 @@ https://en.wikipedia.org/wiki/List_of_S%26P_500_companies
 
 ### Data Scraping from Web Scraping
 We perform web scraping for extracting data from HTML files using a Python library called Beautiful Soup. The HTML parser is used to connect to the website, and the parse tree is transformed into a structured Unicode string. Using Beautiful Soup, we extracted company data  from the following link:
+
 https://www.marketbeat.com/types-of-stock/sp-500-stocks/
 
 ### Data Scraping using Yahoo Finance API
@@ -79,6 +80,8 @@ Yahoo Finance API is a Python library which helps us fetch and retrieve company'
 - Using Hourly Prices, we generated a line graph to plot Hourly Low Prices for Amazon and a KDE plot to graph the Comparison of Hourly Open and Close Prices of Microsoft
 - In the end, this data is inserted into their respective Daily Prices and Hourly Prices Table
 
+Refer: https://github.com/Draconian10/StockAssist/tree/main/Data_Scraping_Cleaning
+
 ### Data Normalization
 Data Normalization is the process of restructuring the logical data model of a database to eliminate redundancy, organize data efficiently and reduce the potential for data anamolies.
 Here, we verified the table structure for normalization and modified the structure if the table does not conform to 3NF.
@@ -102,6 +105,8 @@ The requirements to satisfy the 3rd NF are as follows:
 - All requirements for 2nd NF must be met.
 - Eliminate fields that do not depend on the primary key.
 - That is, any field that is dependent not only on the primary key but also on another field must be moved to another table.
+
+Refer: https://github.com/Draconian10/StockAssist/tree/main/Data_Normalization
 
 ## Tables Structure
 
