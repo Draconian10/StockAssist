@@ -17,16 +17,25 @@ Our database system will store user details along with its portfolio. Based on t
 We are planning to extract live and historical ticker prices and company information using Yahoo Finance API. This data will be cleaned and preprocessed so that it can be inserted into the database in a meaningful format. This price data will be available in the OHLC format and will be used to create multiple modules of the system. Additionally, we will be utilizing this data to train a machine learning algorithm which will predict stock prices and recommend buying/selling of stocks to the users.
 
 ## Implementation
+
 We have scraped vital stock market data from multiple sources as follows:
+### Twitter Scraping
+We initially started by scraping Twitter using an easy-to-use library called Tweepy for accessing the Twitter API. Using Twitter API, we will extract data regarding stock market tweets and their users.
+This data is stored into the Stock Assist database in the following tables:
+- User
+- Tweets
+- Tweet Tags
+- Tweet Mentions
+- Master Twitter Directory
+
+Refer: https://github.com/Draconian10/StockAssist/tree/main/Twitter_Scraping
 
 ### Data Scraping from CSV File
 We fetched list of S&P 500 companies and inserted it into the CSV file from the following link:
-
 https://en.wikipedia.org/wiki/List_of_S%26P_500_companies
 
 ### Data Scraping from Web Scraping
 We perform web scraping for extracting data from HTML files using a Python library called Beautiful Soup. The HTML parser is used to connect to the website, and the parse tree is transformed into a structured Unicode string. Using Beautiful Soup, we extracted company data  from the following link:
-
 https://www.marketbeat.com/types-of-stock/sp-500-stocks/
 
 ### Data Scraping using Yahoo Finance API
@@ -66,6 +75,30 @@ Yahoo Finance API is a Python library which helps us fetch and retrieve company'
 - In the same way, we created a scatterplot to compare Daily High and Close Prices for Tesla
 - Using Hourly Prices, we generated a line graph to plot Hourly Low Prices for Amazon and a KDE plot to graph the Comparison of Hourly Open and Close Prices of Microsoft
 - In the end, this data is inserted into their respective Daily Prices and Hourly Prices Table
+
+### Data Normalization
+Data Normalization is the process of restructuring the logical data model of a database to eliminate redundancy, organize data efficiently and reduce the potential for data anamolies.
+Here, we verified the table structure for normalization and modified the structure if the table does not conform to 3NF.
+
+### Database Normal Forms
+
+#### First Normal Form
+The requirements to satisfy the 1st NF are as follows:
+- Each table has a primary key: minimal set of attributes which can uniquely identify a record.
+- The values in each column of a table are atomic (No multi-value attributes allowed).
+- There are no repeating groups: two columns do not store similar information in the same table.
+
+#### Second Normal Form
+The requirements to satisfy the 2nd NF are as follows:
+- All requirements for 1st NF must be met.
+- Redundant data across multiple rows of a table must be moved to a separate table.
+- The resulting tables must be related to each other by use of foreign key.
+
+#### Third Normal Form
+The requirements to satisfy the 3rd NF are as follows:
+- All requirements for 2nd NF must be met.
+- Eliminate fields that do not depend on the primary key.
+- That is, any field that is dependent not only on the primary key but also on another field must be moved to another table.
 
 ## Tables Structure
 
