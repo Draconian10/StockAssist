@@ -368,9 +368,121 @@ CREATE TABLE `hourly_prices` (
     cm ON td.td_ticker = cm.cm_symbol ORDER BY td.td_dividend_rate DESC LIMIT 1;
 ![image](https://user-images.githubusercontent.com/23314479/207747130-c8a889c6-b564-4e25-8507-033cc6f65578.png)
 
-### What are the companies having the net income above 100 billion dollars?
+### What are the top losers stocks of the day?
 #### SQL:
-    SELECT cm.cm_short_name, td_total_revenue FROM Ticker_details td INNER JOIN Company_Master cm
-    ON td.td_ticker = cm.cm_symbol WHERE td.td_total_revenue >= 100000000000 ORDER BY
-    td_total_revenue;
-![image](https://user-images.githubusercontent.com/23314479/207747293-3c95fba7-0ef4-4045-81e7-26b6b50ad5b2.png)
+    select dp_ticker, dp_date, (dp_close-dp_open) price_change from daily_prices
+    where dp_date = '2022-12-02' order by price_change limit 5;
+![image](https://user-images.githubusercontent.com/23314479/207748517-6bec1f7a-fdb2-4ffe-b342-22dc41bf1060.png)
+
+## Views
+
+### What is the market cap of any particular stock?
+
+#### SQL:
+    create or replace view cmp_market_cap as select cm.cm_symbol cmc_symbol, cm.cm_short_name cmc_company_name, cd.cmd_market_cap cmc_market_cap from company_details cd, company_master cm where cd.cmd_symbol = cm.cm_symbol;
+![image](https://user-images.githubusercontent.com/23314479/207749409-86293019-003a-4235-a5cc-8f11b93d050e.png)
+    
+    
+### Which companies have high operating cash flow?
+
+#### SQL:
+    create or replace view cmp_cash_flow as select td.tck_symbol ccf_symbol, cm.cm_short_name ccf_company_name, cm.cm_cash_flow ccf_cash_flow from company_master cm, ticker_master td where td.tck_symbol = cm.cm_symbol order by cm.cm_cash_flow desc;
+![image](https://user-images.githubusercontent.com/23314479/207749531-27073149-0aa6-4276-a49b-d86e8def953f.png)
+    
+    
+### What was the change in price of the stock over time?
+
+#### SQL:
+    create or replace view amzn_stock_price_change as select dp_ticker aspc_ticker, ((select dp_close from daily_prices where dp_ticker = 'AMZN' and dp_date = (select max(dp_date) from daily_prices where dp_ticker = 'AMZN')) - (select dp_close from daily_prices where dp_ticker = 'AMZN' and dp_date = (select min(dp_date) from daily_prices where dp_ticker = 'AMZN'))) aspc_price_change from daily_prices where dp_ticker = 'AMZN' group by dp_ticker;
+![image](https://user-images.githubusercontent.com/23314479/207749585-b43f3f8b-41d6-4127-821c-a050c0b9a552.png)
+    
+
+### What was the daily return of the stock on average?
+
+#### SQL:
+    create or replace view tck_daily_returns as select dp_ticker tdr_ticker, dp_date tdr_date, (dp_close-dp_open) tdr_daily_return from daily_prices order by dp_ticker, dp_date;
+![image](https://user-images.githubusercontent.com/23314479/207749670-18a10c25-db08-4d9e-affd-a2075d8e6bdb.png)
+    
+
+### What was the moving average of the various stocks?
+
+#### SQL:
+    create or replace view tck_moving_avg as select hp_ticker tma_ticker, hp_date tma_date, (sum(hp_close)/count(hp_close)) tma_mov_avg from hourly_prices;
+![image](https://user-images.githubusercontent.com/23314479/207749858-e15b35e9-561a-4666-b889-482edd4af7ea.png)
+    
+
+### Which are the highest dividend paying stocks?
+
+#### SQL:
+    create or replace view high_dividend_stocks as select tm.tck_symbol, tm.tck_security, td.td_dividend_rate from ticker_details td, ticker_master tm where td.td_ticker = tm.tck_symbol order by td.td_dividend_rate desc limit 5;
+![image](https://user-images.githubusercontent.com/23314479/207749927-64d7a6d6-ad86-4fb8-a453-d07875c9875a.png)
+    
+    
+### How much value do we put at risk by investing in a particular stock?
+
+#### SQL:
+    create or replace view msft_risk_reward_ratio as select dp1.dp_ticker, (((dp2.dp_close - dp1.dp_close)*dp1.dp_volume)/(dp1.dp_close * dp1.dp_volume)) risk_reward from daily_prices dp1, daily_prices dp2 where dp1.dp_date = dp2.dp_date + 1 and dp1.dp_ticker = 'MSFT' and dp2.dp_ticker = 'MSFT' group by dp1.dp_ticker, dp2.dp_ticker;
+![image](https://user-images.githubusercontent.com/23314479/207749970-998cef56-22bd-4b0e-abc6-4175634c3d1c.png)
+    
+    
+### Which stocks achieved the 52 week high within the last week?
+
+#### SQL:
+    create or replace view last_52_week_high_stocks as select tck_symbol lwhs_ticker, tck_security lwhs_security_name, td_52_week_high lwhs_52_week_high from ticker_details, ticker_master where tck_symbol = td_ticker order by td_52_week_high desc limit 5;
+![image](https://user-images.githubusercontent.com/23314479/207750033-abe09750-46f1-4062-802c-3e62e26d5b9d.png)
+    
+    
+### Which are the highest performing stocks in the Technology sector for the day?
+
+#### SQL:
+    create or replace view high_performance_tech_stocks as select tck_symbol hpts_symbol, tck_security hpts_security_name, ti_sector hpts_sector, dp_close hpts_close_price from ticker_master, daily_prices, ticker_industry where tck_symbol = dp_ticker and ti_sub_industry = tck_sub_industry and ti_sector = 'Information Technology' and dp_date = (select max(dp_date) from daily_prices) order by dp_close desc;
+![image](https://user-images.githubusercontent.com/23314479/207750139-a205165c-23e2-4d87-bfcd-f4770e092424.png)
+    
+
+### What is the annual net income of a given company?
+
+#### SQL:
+    create or replace view company_net_income as select td.td_ticker cni_ticker, cm.cm_short_name cni_company_name, td.td_total_revenue cni_net_income from ticker_details td, company_master cm where td.td_ticker = cm.cm_symbol order by cni_net_income desc;
+![image](https://user-images.githubusercontent.com/23314479/207750213-4a320e00-0bd2-4a37-83bc-4ccef8fdd369.png)
+    
+
+### what is the 52 week low of any particular stock?
+
+#### SQL:
+    create or replace view tck_52_week_low_stocks as SELECT cm.cm_short_name twls_company_name, td.td_52_week_low twls_52_week_low from Ticker_Details td, Company_Master cm where td.td_ticker = cm.cm_symbol order by td.td_52_week_low desc;
+![image](https://user-images.githubusercontent.com/23314479/207750283-7e6b58b8-129c-4790-b278-d30c2ced0aaf.png)
+    
+
+### What is the net annual revenue of Netflix?
+
+#### SQL:
+    create or replace view nflx_net_revenue as SELECT cm_short_name nnr_short_name, td.td_total_revenue nnr_annual_revenue FROM Ticker_Details td, Company_Master cm where td.td_ticker = cm.cm_symbol and cm_symbol='NFLX';
+![image](https://user-images.githubusercontent.com/23314479/207750372-51e928e5-8b39-4088-9913-b2941cc1d58d.png)
+    
+
+### List the companies based on their sector.
+
+#### SQL:
+    create or replace view company_sector as SELECT tck_security, t.ti_sector from Ticker_industry t, ticker_master tck where t.ti_sub_industry = tck_sub_industry order by ti_sector;
+![image](https://user-images.githubusercontent.com/23314479/207750434-1cee2bb0-5ccc-4d4b-af2a-70aaeb3f3353.png)
+    
+    
+### What is the lowest daily close for Microsoft?
+
+#### SQL:
+    create or replace view msft_lowest_daily_close as select dp_ticker mldc_ticker, dp_close mldc_close from daily_prices where dp_ticker = 'MSFT' and dp_close = (select min(dp_close) from daily_prices where dp_ticker = 'MSFT');
+![image](https://user-images.githubusercontent.com/23314479/207750502-4e661247-51be-4fe1-ac45-2ea7ee9117af.png)
+    
+    
+## What are the companies having the net income above 200 billion dollars?
+
+#### SQL:
+    create or replace view cmp_inc_over_two_billion as SELECT cm.cm_short_name ciotb_company_name, td_total_revenue ciotb_income FROM Ticker_details td, Company_Master cm where td.td_ticker = cm.cm_symbol and td.td_total_revenue >= 200000000000 ORDER BY td_total_revenue;
+![image](https://user-images.githubusercontent.com/23314479/207750542-73cc37b1-93f1-4eb4-a9d1-766cf9de7a74.png)
+    
+    
+### What is the profit of GOOGLE in last 1 year?
+
+#### SQL:
+    create or replace view googl_gross_profit as SELECT tck_symbol ggp_symbol, cm_short_name ggp_company_name, cm_gross_profit ggp_gross_profit from Company_master cm, ticker_master tck where cm.cm_symbol = tck.tck_symbol and tck.tck_symbol ='GOOGL';
+![image](https://user-images.githubusercontent.com/23314479/207750582-669d786c-cb94-4813-9f19-38c92968e667.png)
