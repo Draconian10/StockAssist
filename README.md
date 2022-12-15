@@ -16,6 +16,9 @@ Our database system will store user details along with its portfolio. Based on t
 ## Strategy
 We are planning to extract live and historical ticker prices and company information using Yahoo Finance API. This data will be cleaned and preprocessed so that it can be inserted into the database in a meaningful format. This price data will be available in the OHLC format and will be used to create multiple modules of the system. Additionally, we will be utilizing this data to train a machine learning algorithm which will predict stock prices and recommend buying/selling of stocks to the users.
 
+## Conceptual Model
+![Stock_Market drawio(2)](https://user-images.githubusercontent.com/23314479/207480136-c54e884e-b33c-4d5a-885c-37ece58edbe3.png)
+
 ## Implementation
 
 We have scraped vital stock market data from multiple sources as follows:
