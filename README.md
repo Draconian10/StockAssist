@@ -312,3 +312,65 @@ CREATE TABLE `hourly_prices` (
         delete from company_location where cl_city is not null;
         delete from hourly_prices where hp_id is not null;
         delete from daily_prices where dp_id is not null;
+
+## Use Cases
+
+### What is the profit of GOOGLE in last 1 year?
+
+#### SQL:
+        SELECT tck_symbol, cm_short_name, cm_gross_profit from Company_master cm INNER JOIN ticker_master tck ON cm.cm_symbol = tck.tck_symbol WHERE tck.tck_symbol ='GOOGL';
+![image](https://user-images.githubusercontent.com/23314479/207746229-74c80355-1570-4bd9-b427-45627cc044ac.png)
+
+### What are the companies having the net income above 200 billion dollars?
+#### SQL:
+    SELECT cm.cm_short_name, td_total_revenue FROM Ticker_details td INNER JOIN Company_Master cm ON td.td_ticker = cm.cm_symbol WHERE td.td_total_revenue >= 200000000000 ORDER BY td_total_revenue;
+![image](https://user-images.githubusercontent.com/23314479/207746315-a3e8d687-5af5-4932-8728-bd2bbc1eb09f.png)
+
+### Which sector does Tesla comes under?
+#### SQL:
+    SELECT cm.cm_short_name, ti.ti_sector from Ticker_Master t, Company_Master cm, ticker_industry ti where
+    t.tck_symbol = cm.cm_symbol and ti_sub_industry = tck_sub_industry and cm.cm_symbol = 'TSLA';
+![image](https://user-images.githubusercontent.com/23314479/207746810-5e65ed35-4c0f-4dfd-b1f5-5d04b65c1120.png)
+
+### What is the net annual revenue of Netflix?
+#### SQL:
+    SELECT cm_short_name, td.td_total_revenue FROM Ticker_Details td INNER JOIN Company_Master cm ON
+    td.td_ticker = cm.cm_symbol WHERE cm_symbol='NFLX';
+![image](https://user-images.githubusercontent.com/23314479/207746552-fdd82865-c7d8-4d41-a209-9cace4451028.png)
+
+### What is the 52 week low of Apple?
+#### SQL:
+    SELECT cm.cm_short_name, td.td_52_week_low from Ticker_Details td INNER JOIN Company_Master cm ON
+    td.td_ticker = cm.cm_symbol WHERE cm_symbol ='AAPL';
+![image](https://user-images.githubusercontent.com/23314479/207746599-844aefcb-86c3-4826-9b38-bb865af81597.png)
+
+### What is the highest daily close for Microsoft?
+#### SQL:
+    SELECT cm_symbol, dp_close FROM Daily_Prices dp INNER JOIN Company_Master cm ON dp.dp_ticker = cm.cm_symbol 
+    WHERE cm.cm_symbol = 'MSFT' ORDER BY dp_close DESC LIMIT 1;
+![image](https://user-images.githubusercontent.com/23314479/207746890-0c8cab62-b709-4ef1-b159-863b9b5059d4.png)
+
+### What is the net annual revenue of Tesla?
+#### SQL:
+    SELECT cm_short_name, td.td_total_revenue FROM Ticker_Details td INNER JOIN Company_Master cm
+    ON td.td_ticker = cm.cm_symbol WHERE cm_symbol='TSLA';
+![image](https://user-images.githubusercontent.com/23314479/207746987-b459c560-582b-4cde-bb6e-59b7e1da6de2.png)
+
+### Which sector does Apple Inc. comes under?
+#### SQL:
+    SELECT cm.cm_short_name, ti.ti_sector from Ticker_Master t, Company_Master cm, ticker_industry ti where
+    t.tck_symbol = cm.cm_symbol and ti_sub_industry = tck_sub_industry and cm.cm_symbol = 'AAPL';
+![image](https://user-images.githubusercontent.com/23314479/207747056-99b2a227-bb07-47e0-834e-97f1f05ddcbd.png)
+
+### Which is the highest paying dividend company?
+#### SQL:    
+    SELECT cm.cm_short_name, td.td_dividend_rate from Ticker_Details td INNER JOIN Company_Master
+    cm ON td.td_ticker = cm.cm_symbol ORDER BY td.td_dividend_rate DESC LIMIT 1;
+![image](https://user-images.githubusercontent.com/23314479/207747130-c8a889c6-b564-4e25-8507-033cc6f65578.png)
+
+### What are the companies having the net income above 100 billion dollars?
+#### SQL:
+    SELECT cm.cm_short_name, td_total_revenue FROM Ticker_details td INNER JOIN Company_Master cm
+    ON td.td_ticker = cm.cm_symbol WHERE td.td_total_revenue >= 100000000000 ORDER BY
+    td_total_revenue;
+![image](https://user-images.githubusercontent.com/23314479/207747293-3c95fba7-0ef4-4045-81e7-26b6b50ad5b2.png)
